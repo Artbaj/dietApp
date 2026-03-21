@@ -1,22 +1,31 @@
 // InstallContext.tsx
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
-import  useDeviceDetect from '@/utils/useDeviceDetect';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import {
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
+import useDeviceDetect from "@/utils/useDeviceDetect";
 declare global {
-    interface WindowEventMap {
-      beforeinstallprompt: BeforeInstallPromptEvent;
-    }
+  interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent;
   }
-  
-  interface BeforeInstallPromptEvent extends Event {
-    prompt: () => void;
-    userChoice: Promise<{
-      outcome: 'accepted' | 'dismissed',
-      platform: string
-    }>;
-  }
-  
-  let deferredPrompt: BeforeInstallPromptEvent | null = null;
+}
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => void;
+  userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+}
+
+let deferredPrompt: BeforeInstallPromptEvent | null = null;
 interface InstallContextType {
   isModalOpen: boolean;
   installDenied: boolean;
@@ -29,19 +38,22 @@ const InstallContext = createContext<InstallContextType | undefined>(undefined);
 export const useInstallContext = (): InstallContextType => {
   const context = useContext(InstallContext);
   if (!context) {
-    throw new Error('useInstallContext must be used within an InstallProvider');
+    throw new Error("useInstallContext must be used within an InstallProvider");
   }
   return context;
 };
 type InstallProviderProps = {
-    children: React.ReactNode;
-  };
+  children: React.ReactNode;
+};
 
-export const InstallProvider: React.FC<InstallProviderProps> = ({ children }) => {
+export const InstallProvider: React.FC<InstallProviderProps> = ({
+  children,
+}) => {
   const { isIOSDevice } = useDeviceDetect();
-  const [isModalOpen, setModalOpen] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [installDenied, setInstallDenied] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     const handleInstallPrompt = (e: BeforeInstallPromptEvent) => {
@@ -49,10 +61,10 @@ export const InstallProvider: React.FC<InstallProviderProps> = ({ children }) =>
       setDeferredPrompt(e);
     };
 
-    window.addEventListener('beforeinstallprompt', handleInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handleInstallPrompt);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
+      window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
     };
   }, []);
 
@@ -64,7 +76,7 @@ export const InstallProvider: React.FC<InstallProviderProps> = ({ children }) =>
     if (prompt) {
       prompt.prompt();
       prompt.userChoice.then((choiceResult) => {
-        console.log('User accepted the install prompt');
+        console.log("User accepted the install prompt");
         setInstallDenied(false);
         setModalOpen(false);
       });
@@ -91,7 +103,9 @@ export const InstallProvider: React.FC<InstallProviderProps> = ({ children }) =>
                 <>
                   <p>To install this app on your iOS device:</p>
                   <p>1. Tap the Share button in Safari.</p>
-                  <p>2. Tap {"'"}Add to Home Screen{"'"}.</p>
+                  <p>
+                    2. Tap {"'"}Add to Home Screen{"'"}.
+                  </p>
                 </>
               ) : (
                 "Install this app on your device for the best experience."
@@ -102,7 +116,10 @@ export const InstallProvider: React.FC<InstallProviderProps> = ({ children }) =>
                 Cancel
               </Button>
               {!isIOSDevice && (
-                <Button colorScheme="green" onClick={() => handleInstallClick(deferredPrompt)}>
+                <Button
+                  colorScheme="green"
+                  onClick={() => handleInstallClick(deferredPrompt)}
+                >
                   Install
                 </Button>
               )}
