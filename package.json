@@ -20,6 +20,7 @@
     "@serwist/precaching": "^8.4.4",
     "@serwist/sw": "^8.4.4",
     "framer-motion": "^11.18.2",
+    "html5-qrcode": "^2.3.8",
     "next": "^14.2.35",
     "next-pwa": "^2.0.2",
     "react": "^18",

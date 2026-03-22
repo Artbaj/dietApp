@@ -7,6 +7,7 @@ import {
   Icon,
   useColorModeValue,
   Box,
+  background,
 } from "@chakra-ui/react";
 import { FaHome, FaQrcode, FaHistory, FaUserCircle } from "react-icons/fa";
 
@@ -23,42 +24,60 @@ export const MobileMenu = () => {
     { label: "Logs", icon: FaHistory, path: "/logs" },
     { label: "Profile", icon: FaUserCircle, path: "/profile" },
   ];
-
+  const activeGlassStyle = {
+    bg: "rgba(255, 255, 255, 0.15)", // Slightly more opaque than the bar
+    backdropFilter: "blur(20px) saturate(180%)",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)", // Subtle deep glow
+  };
   return (
     <Flex
-      position="fixed"
-      bottom={0}
-      left={0}
-      right={0}
+      position="fixed" // Changed to fixed to ensure it stays at bottom of screen
+      bottom={6} // Lifted slightly off the bottom for a "floating" look
+      left={4}
+      right={4}
       height="70px"
-      bg={bg}
-      borderTop="1px solid"
-      borderColor={useColorModeValue("gray.100", "gray.700")}
+      bg="rgba(255, 255, 255, 0.08)"
+      backdropFilter="blur(16px) saturate(120%)"
+      border="1px solid rgba(255, 255, 255, 0.15)"
+      color="white"
       justify="space-around"
       align="center"
-      px={4}
-      zIndex={10}
-      pb={4}
+      borderRadius="30px" // Fully rounded floating bar
+      zIndex={100}
+      transition="all 0.3s ease"
     >
       {navItems.map((item) => {
         const isActive = router.pathname === item.path;
 
         return (
-          <Link key={item.path} href={item.path}>
+          <Link
+            key={item.path}
+            href={item.path}
+            style={{ textDecoration: "none" }}
+          >
             <IconButton
-              /* REMOVE as="a" here */
               aria-label={item.label}
-              icon={<Icon as={item.icon} w={6} h={6} />}
-              bg={isActive ? activeBg : "transparent"}
-              color={isActive ? "white" : inactiveColor}
+              icon={
+                <Icon
+                  as={item.icon}
+                  w={isActive ? 7 : 5}
+                  h={isActive ? 7 : 5}
+                />
+              }
+              // Apply Glass styling only when active
+              {...(isActive ? activeGlassStyle : { bg: "transparent" })}
+              color={isActive ? "white" : "whiteAlpha.600"}
               rounded="full"
-              size={isActive ? "lg" : "md"}
-              mt={isActive ? "-40px" : "0"}
-              shadow={isActive ? "xl" : "none"}
-              transition="all 0.2s cubic-bezier(.17,.67,.83,.67)"
+              size="lg"
+              // Lift the active item
+
+              transition="all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
               _hover={{
-                bg: isActive ? activeBg : "gray.100",
+                bg: "rgba(255, 255, 255, 0.1)",
+                transform: isActive ? "translateY(-28px)" : "scale(1.1)",
               }}
+              _active={{ bg: "rgba(255, 255, 255, 0.2)" }}
             />
           </Link>
         );
